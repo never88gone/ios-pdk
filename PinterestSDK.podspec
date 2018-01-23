@@ -14,10 +14,10 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
                        An SDK for interacting with Pinterest.
                        DESC
-  s.homepage         = "https://github.com/Pinterest/iOS-PDK"
+  s.homepage         = "https://github.com/never88gone/ios-pdk"
   s.license          = 'MIT'
   s.author           = { "Ricky Cancro" => "ricky@pinterest.com", "Garrett Moon" => "garrett@pinterest.com" }
-  s.source           = { :git => "https://github.com/pinterest/ios-pdk.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/never88gone/ios-pdk", :tag => s.version.to_s }
 
   s.ios.deployment_target = '7.0'
   s.requires_arc = true
