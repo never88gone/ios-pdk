@@ -323,7 +323,7 @@ static void defaultFailureAction(PDKClientFailure failureBlock, NSError *error)
      andFailure:(PDKClientFailure)failureBlock;
 {
     NSString *urlString = [[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString];
-    [self GET:urlString parameters:[self signParameters:parameters] progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self GET:urlString parameters:[self signParameters:parameters] success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         defaultSuccessAction(successBlock, task, responseObject, parameters, path);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         defaultFailureAction(failureBlock, error);
@@ -337,7 +337,7 @@ static void defaultFailureAction(PDKClientFailure failureBlock, NSError *error)
       andFailure:(PDKClientFailure)failureBlock;
 {
     NSString *urlString = [[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString];
-    [self POST:urlString parameters:[self signParameters:parameters] progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [self POST:urlString parameters:[self signParameters:parameters]  success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         defaultSuccessAction(successBlock, task, responseObject, parameters, path);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         defaultFailureAction(failureBlock, error);
@@ -394,16 +394,16 @@ static void defaultFailureAction(PDKClientFailure failureBlock, NSError *error)
     [mutableRequest setHTTPShouldHandleCookies:YES];
     [mutableRequest setValue:@"no-cache, no-store" forHTTPHeaderField:@"Cache-Control"];
     
-    return [super dataTaskWithRequest:mutableRequest uploadProgress:uploadProgressBlock downloadProgress:downloadProgressBlock completionHandler:completionHandler];
+    return [super dataTaskWithRequest:mutableRequest completionHandler:completionHandler];
 }
 
 - (NSURLSessionUploadTask *)uploadTaskWithStreamedRequest:(NSURLRequest *)request
-                                                 progress:(void (^)(NSProgress *uploadProgress)) uploadProgressBlock
+
                                         completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
     [mutableRequest setHTTPShouldHandleCookies:YES];
-    return [super uploadTaskWithStreamedRequest:mutableRequest progress:uploadProgressBlock completionHandler:completionHandler];
+   return  [super uploadTaskWithStreamedRequest:mutableRequest progress:nil completionHandler:completionHandler];
 }
 
 #pragma mark - Helpers
@@ -637,16 +637,13 @@ static void defaultFailureAction(PDKClientFailure failureBlock, NSError *error)
     
     NSString *path = @"pins/";
     NSString *urlString = [[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString];
+    
+    
     [self POST:urlString parameters:[self signParameters:parameters] constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         [formData appendPartWithFileData:imageData
                                     name:@"image"
                                 fileName:@"image"
                                 mimeType:@"application/octet-stream"];
-    } progress:^(NSProgress * _Nonnull uploadProgress) {
-        if (progressBlock && [uploadProgress totalUnitCount] > 0) {
-            CGFloat percentComplete = (CGFloat)[uploadProgress completedUnitCount]/(CGFloat)[uploadProgress totalUnitCount];
-            progressBlock(percentComplete);
-        }
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         defaultSuccessAction(successBlock, task, responseObject, parameters, path);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
